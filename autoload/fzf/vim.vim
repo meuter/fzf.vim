@@ -352,6 +352,9 @@ function! s:fill_quickfix(list, ...)
   if len(a:list) > 1
     call setqflist(a:list)
     copen
+    if a:0
+      execute a:1
+    endif
   endif
 endfunction
 
@@ -751,22 +754,24 @@ function! s:ag_handler(lines, has_column)
     return
   endif
 
-  let cmd = s:action_for(a:lines[0], 'e')
-  let list = map(filter(a:lines[1:], 'len(v:val)'), 's:ag_to_qf(v:val, a:has_column)')
-  if empty(list)
-    return
-  endif
-
-  let first = list[0]
-  try
-    call s:open(cmd, first.filename)
-    execute first.lnum
-    if a:has_column
-      call cursor(0, first.col)
+  if len(a:lines) > 1
+    let cmd = s:action_for(a:lines[0], 'e')
+    let list = map(filter(a:lines[1:], 'len(v:val)'), 's:ag_to_qf(v:val, a:has_column)')
+    if empty(list)
+      return
     endif
-    normal! zz
-  catch
-  endtry
+
+    let first = list[0]
+    try
+      call s:open(cmd, first.filename)
+      execute first.lnum
+      if a:has_column
+        call cursor(0, first.col)
+      endif
+      normal! zz
+    catch
+    endtry
+  endif
 
   call s:fill_quickfix(list)
 endfunction
