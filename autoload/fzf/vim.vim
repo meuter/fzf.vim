@@ -754,13 +754,13 @@ function! s:ag_handler(lines, has_column)
     return
   endif
 
-  if len(a:lines) > 1
-    let cmd = s:action_for(a:lines[0], 'e')
-    let list = map(filter(a:lines[1:], 'len(v:val)'), 's:ag_to_qf(v:val, a:has_column)')
-    if empty(list)
-      return
-    endif
+  let cmd = s:action_for(a:lines[0], 'e')
+  let list = map(filter(a:lines[1:], 'len(v:val)'), 's:ag_to_qf(v:val, a:has_column)')
+  if empty(list)
+    return
+  endif
 
+  if len(list) == 1
     let first = list[0]
     try
       call s:open(cmd, first.filename)
@@ -772,7 +772,6 @@ function! s:ag_handler(lines, has_column)
     catch
     endtry
   endif
-
   call s:fill_quickfix(list)
 endfunction
 
